@@ -255,4 +255,47 @@ class BoostCakePaginatorHelper extends PaginatorHelper {
 		);
 	}
 
+/**
+ * Taken from Cake PaginatorHelper, extended to apply active class automatically
+ *
+ * Generates a plain or Ajax link with pagination parameters
+ *
+ * ### Options
+ *
+ * - `update` The Id of the DOM element you wish to update. Creates Ajax enabled links
+ *    with the AjaxHelper.
+ * - `escape` Whether you want the contents html entity encoded, defaults to true
+ * - `model` The model to use, defaults to PaginatorHelper::defaultModel()
+ *
+ * @param string $title Title for the link.
+ * @param string|array $url Url for the action. See Router::url()
+ * @param array $options Options for the link. See #options for list of keys.
+ * @return string A link with pagination parameters.
+ * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/paginator.html#PaginatorHelper::link
+ */
+	public function link($title, $url = array(), $options = array()) {
+		$named = $this->params['named'];
+		unset($named['sort'], $named['direction'], $named['page']);
+
+		if (count($url)) {
+			foreach ($url as $key => $value) {
+				if ($value === null && !isset($named[$key])) {
+					$named[$key] = $url[$key];
+				}
+			}
+
+			$match = count($url) == count(array_intersect_assoc($url, $named);
+
+			if ($match) {
+				if (isset($options['class']) && !empty($options['class'])) {
+					$options['class'] .= ' active btn-success';
+				}
+				else {
+					$options['class'] = 'active btn-success';
+				}
+			}
+		}
+
+		return parent::link($title, $url, $options);
+	}
 }

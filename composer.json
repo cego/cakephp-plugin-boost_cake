@@ -29,5 +29,8 @@
     },
     "suggest": {
         "twbs/bootstrap": "Bootstrap framework"
+    },
+    "extra": {
+        "installer-name": "BoostCake"
     }
 }
