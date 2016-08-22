@@ -12,7 +12,8 @@ class BoostCakePaginatorHelper extends PaginatorHelper {
 	public function pagination($options = array()) {
 		$default = array(
 			'div' => false,
-			'ul' => ''
+			'ul' => '',
+			'escape' => false
 		);
 
 		$model = (empty($options['model'])) ? $this->defaultModel() : $options['model'];
@@ -50,7 +51,8 @@ class BoostCakePaginatorHelper extends PaginatorHelper {
 		if ($div !== false) {
 			$out = $this->Html->div($div, $out);
 		}
-		return $out;
+
+		return preg_replace('/&amp;#82(49|50);/', '&#82$1', $out);
 	}
 
 /**
