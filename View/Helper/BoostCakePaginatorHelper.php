@@ -286,7 +286,7 @@ class BoostCakePaginatorHelper extends PaginatorHelper {
 				}
 			}
 
-			$match = count($url) == count(array_intersect_assoc($url, $named);
+			$match = count($url) == count(array_intersect_assoc($url, $named));
 
 			if ($match) {
 				if (isset($options['class']) && !empty($options['class'])) {
