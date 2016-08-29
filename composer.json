@@ -1,5 +1,5 @@
 {
-    "name": "hdogan/boost_cake",
+    "name": "clowNay/boost_cake",
     "type": "cakephp-plugin",
     "description": "BoostCake is a plugin for CakePHP using Bootstrap",
     "keywords": [
@@ -17,11 +17,15 @@
         {
             "name": "Hidayet Dogan",
             "email": "hdogan@gmail.com"
+        },
+        {
+            "name": "Andreas Quist Berggreen",
+            "email": "aqb1985@gmail.com"
         }
     ],
     "support": {
-        "issues": "https://github.com/hdogan/cakephp-plugin-boost_cake/issues",
-        "source": "https://github.com/hdogan/cakephp-plugin-boost_cake"
+        "issues": "https://github.com/clowNay/cakephp-plugin-boost_cake/issues",
+        "source": "https://github.com/clowNay/cakephp-plugin-boost_cake"
     },
     "require": {
         "php": ">=5.3.0",
