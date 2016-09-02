@@ -13,6 +13,7 @@ BoostCake is a plugin for CakePHP using Bootstrap
 
 * CakePHP >= 2.3
 * Bootstrap >= 2.3 (3.0 support)
+* Bootstrap DatePicker >= http://eonasdan.github.io/bootstrap-datetimepicker/
 
 ## Installation
 
