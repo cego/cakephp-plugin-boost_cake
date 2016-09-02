@@ -52,6 +52,7 @@ If you want to simplify the options, you can develop WrapBoostCake plugin.
 * Adds a wrapping `div` to inputs
 * Adds content before and after `input`
 * Adds error class in outer `div`
+* Changes datetime fields to a simple textfield
 * Changes pagination tags
 * Changes SessionHelper::flash()`s template
 
