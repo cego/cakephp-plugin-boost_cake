@@ -134,7 +134,89 @@ class BoostCakeFormHelper extends FormHelper {
 			}
 		}
 
+		if ($this->_inputType === 'datetime') {
+			$class = $inputDefaults['class'] . ' js-date-time-picker';
+			$html = str_replace($options['class'], $class, $html);
+		}
+
 		return $html;
+	}
+
+/**
+ * Overwrite FormHelper::dateTime()
+ * Converts datetime to only one inputfield
+ * Attaches a datepicker to all datetime fields
+ */
+
+	public function dateTime($fieldName, $dateFormat = 'DMY', $timeFormat = '12', $attributes = array()) {
+
+		$attributes += array('empty' => true, 'value' => null);
+		$year = $month = $day = $hour = $min = $meridian = null;
+
+		if (empty($attributes['value'])) {
+			$attributes = $this->value($attributes, $fieldName);
+		}
+
+		// Check for missing value
+		if ($attributes['value'] === null && $attributes['empty'] != true) {
+			$value = time();
+		} else {
+			$value = $attributes['value'];
+		}
+
+		// Convert timestamp to something strtotime can read
+		if (is_numeric($value) && $value > 1000000000) {
+			$value = '@'.$value;
+		}
+
+		// If value is array (the format submitted by forms), convert to strtotime readable string
+		if (is_array($value) && isset($value['date']) && $value['date']) {
+			$value = '@'.strtotime($value['date'] . (isset($value['time']) ? ' ' . $value['time'] : ''));
+		}
+
+		// If value is array (the format submitted by forms), convert to strtotime readable string
+		if (is_array($value) && !isset($value['date']) && isset($value['time']) && $value['time']) {
+			$value = '@'.strtotime($value['date'] . (isset($value['time']) ? ' ' . $value['time'] : ''));
+		}
+
+		// If value is empty, or if the date or time keys are empty
+		if ($value == '' || (is_array($value) && (isset($value['date']) && $value['date'] == '' || isset($value['time']) && $value['time'] == ''))) {
+			$value = null;
+		}
+
+		$output = '';
+
+		unset($attributes['value']);
+		unset($attributes['empty']);
+
+		if ($dateFormat !== null) {
+
+			// Always make sure date matches locale
+			$dateFormat = Configure::read('Site.localeDateTimeFormats.' . Configure::read('Site.language') . '.dateTimeFormat');
+
+			if ($value === null) {
+				$output .= $this->text($fieldName, array(
+					'value' => '',
+					'class' => $attributes['class']
+				));
+			} else {
+				if (strtotime($value) !== false) {
+					$dateFormatted = date($dateFormat, strtotime($value));
+				} else {
+					$dateFormatted = $value;
+				}
+
+				// Generate output fot the textfield
+				$output .= $this->text($fieldName, array(
+					'value' => $dateFormatted,
+					'class' => $attributes['class'],
+					'data-locale' => Configure::read('Site.language')
+				));
+			}
+
+		}
+
+		return $output;
 	}
 
 /**
