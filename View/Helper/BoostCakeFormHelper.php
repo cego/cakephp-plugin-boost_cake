@@ -78,6 +78,18 @@ class BoostCakeFormHelper extends FormHelper {
 			'errorClass' => 'has-error error'
 		);
 
+		$inputDefaultSetting = array(
+			'div' => 'form-group row',
+			'label' => array(
+				'class' => 'col-md-3 form-control-label'
+			),
+			'wrapInput' => 'col-md-9',
+			'class' => 'form-control form-control-static'
+		);
+
+
+		$inputDefaults = $this->inputDefaults($inputDefaultSetting);
+
 		if (isset($options['label']) && !is_array($options['label']) && $options['label'] !== false) {
 			$labelText = $options['label'];
 			$options['label'] = array('text' => $labelText);
@@ -108,12 +120,7 @@ class BoostCakeFormHelper extends FormHelper {
 			unset($options['errorClass']);
 		}
 
-		$inputDefaults = $this->_inputDefaults;
-		$this->_inputDefaults = array();
-
 		$html = parent::input($fieldName, $options);
-
-		$this->_inputDefaults = $inputDefaults;
 
 		if ($this->_inputType === 'checkbox') {
 			if (isset($options['before'])) {
@@ -136,6 +143,11 @@ class BoostCakeFormHelper extends FormHelper {
 
 		if ($this->_inputType === 'datetime') {
 			$class = $inputDefaults['class'] . ' js-date-time-picker';
+			$html = str_replace($options['class'], $class, $html);
+		}
+
+		if ($this->_inputType === 'select') {
+			$class = $inputDefaults['class'] . ' c-select';
 			$html = str_replace($options['class'], $class, $html);
 		}
 
