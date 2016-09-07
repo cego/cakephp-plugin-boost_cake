@@ -87,8 +87,13 @@ class BoostCakeFormHelper extends FormHelper {
 			'class' => 'form-control form-control-static'
 		);
 
-
-		$inputDefaults = $this->inputDefaults($inputDefaultSetting);
+		// Make sure we check if there any options set in the view, when creating the form
+		if (isset($this->_inputDefaults)) {
+			$inputDefaultSetting = array_merge($inputDefaultSetting, $this->_inputDefaults);
+			$inputDefaults = $this->inputDefaults($inputDefaultSetting);
+		} else {
+			$inputDefaults = $this->inputDefaults($inputDefaultSetting);
+		}
 
 		if (isset($options['label']) && !is_array($options['label']) && $options['label'] !== false) {
 			$labelText = $options['label'];
