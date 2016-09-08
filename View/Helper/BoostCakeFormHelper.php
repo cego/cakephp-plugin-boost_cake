@@ -87,13 +87,13 @@ class BoostCakeFormHelper extends FormHelper {
 			'class' => 'form-control form-control-static'
 		);
 
-		// Make sure we check if there any options set in the view, when creating the form
 		if (isset($this->_inputDefaults)) {
 			$inputDefaultSetting = array_merge($inputDefaultSetting, $this->_inputDefaults);
 			$inputDefaults = $this->inputDefaults($inputDefaultSetting);
 		} else {
 			$inputDefaults = $this->inputDefaults($inputDefaultSetting);
 		}
+
 
 		if (isset($options['label']) && !is_array($options['label']) && $options['label'] !== false) {
 			$labelText = $options['label'];
@@ -128,6 +128,8 @@ class BoostCakeFormHelper extends FormHelper {
 		$html = parent::input($fieldName, $options);
 
 		if ($this->_inputType === 'checkbox') {
+			$labelClass = 'c-input c-checkbox';
+			$html = str_replace($options['label']['class'], $labelClass, $html);
 			if (isset($options['before'])) {
 				$html = str_replace($options['before'], '%before%', $html);
 			}
@@ -137,7 +139,7 @@ class BoostCakeFormHelper extends FormHelper {
 				$html = preg_replace($regex, '', $html);
 				$html = preg_replace(
 					'/(<input type="checkbox".*?>)/',
-					$label[1] . '$1 ' . $label[2],
+					$label[1] . '$1 ' . '<span class="c-indicator"></span>' . $label[2],
 					$html
 				);
 			}
@@ -235,7 +237,113 @@ class BoostCakeFormHelper extends FormHelper {
 
 		return $output;
 	}
+/**
+ * Generate a set of inputs for `$fields`. If $fields is null the fields of current model
+ * will be used.
+ *
+ * You can customize individual inputs through `$fields`.
+ * ```
+ *	$this->Form->inputs(array(
+ *		'name' => array('label' => 'custom label')
+ *	));
+ * ```
+ *
+ * In addition to controller fields output, `$fields` can be used to control legend
+ * and fieldset rendering.
+ * `$this->Form->inputs('My legend');` Would generate an input set with a custom legend.
+ * Passing `fieldset` and `legend` key in `$fields` array has been deprecated since 2.3,
+ * for more fine grained control use the `fieldset` and `legend` keys in `$options` param.
+ *
+ * @param array $fields An array of fields to generate inputs for, or null.
+ * @param array $blacklist A simple array of fields to not create inputs for.
+ * @param array $options Options array. Valid keys are:
+ * - `fieldset` Set to false to disable the fieldset. If a string is supplied it will be used as
+ *    the class name for the fieldset element.
+ * - `legend` Set to false to disable the legend for the generated input set. Or supply a string
+ *    to customize the legend text.
+ * @return string Completed form inputs.
+ * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/form.html#FormHelper::inputs
+ */
+	public function inputs($fields = null, $blacklist = null, $options = array()) {
+		$fieldset = $legend = false;
+		$modelFields = array();
+		$model = $this->model();
+		if ($model) {
+			$modelFields = array_keys((array)$this->_introspectModel($model, 'fields'));
+		}
+		if (is_array($fields)) {
+			if (array_key_exists('legend', $fields) && !in_array('legend', $modelFields)) {
+				$legend = $fields['legend'];
+				unset($fields['legend']);
+			}
 
+			if (isset($fields['fieldset']) && !in_array('fieldset', $modelFields)) {
+				$fieldset = $fields['fieldset'];
+				unset($fields['fieldset']);
+			}
+		} elseif ($fields !== null) {
+			$fieldset = $legend = $fields;
+			if (!is_bool($fieldset)) {
+				$fieldset = true;
+			}
+			$fields = array();
+		}
+
+		if (isset($options['legend'])) {
+			$legend = $options['legend'];
+		}
+		if (isset($options['fieldset'])) {
+			$fieldset = $options['fieldset'];
+		}
+
+		if (empty($fields)) {
+			$fields = $modelFields;
+		}
+
+		if ($legend === true) {
+			$actionName = __d('cake', 'New %s');
+			$isEdit = (
+				strpos($this->request->params['action'], 'update') !== false ||
+				strpos($this->request->params['action'], 'edit') !== false
+			);
+			if ($isEdit) {
+				$actionName = __d('cake', 'Edit %s');
+			}
+			$modelName = Inflector::humanize(Inflector::underscore($model));
+			$legend = sprintf($actionName, __($modelName));
+		}
+
+		$out = null;
+		foreach ($fields as $name => $options) {
+			if (is_numeric($name) && !is_array($options)) {
+				$name = $options;
+				$options = array();
+			}
+			$entity = explode('.', $name);
+			$blacklisted = (
+				is_array($blacklist) &&
+				(in_array($name, $blacklist) || in_array(end($entity), $blacklist))
+			);
+			if ($blacklisted) {
+				continue;
+			}
+			$out .= $this->input($name, $options);
+		}
+
+		if (is_string($fieldset)) {
+			$fieldsetClass = sprintf(' class="%s"', $fieldset);
+		} else {
+			$fieldsetClass = '';
+		}
+
+		if ($fieldset) {
+			if ($legend) {
+				$out = $this->Html->useTag('legend', $legend) . $out;
+			}
+			$out = $this->Html->useTag('fieldset', $fieldsetClass, $out);
+		}
+		return $out;
+	}
 /**
  * Overwrite FormHelper::_divOptions()
  *
@@ -336,7 +444,108 @@ class BoostCakeFormHelper extends FormHelper {
 
 		return $selectOptions;
 	}
+/**
+ * Creates a submit button element. This method will generate `<input />` elements that
+ * can be used to submit, and reset forms by using $options. image submits can be created by supplying an
+ * image path for $caption.
+ *
+ * ### Options
+ *
+ * - `div` - Include a wrapping div?  Defaults to true. Accepts sub options similar to
+ *   FormHelper::input().
+ * - `before` - Content to include before the input.
+ * - `after` - Content to include after the input.
+ * - `type` - Set to 'reset' for reset inputs. Defaults to 'submit'
+ * - Other attributes will be assigned to the input element.
+ *
+ * ### Options
+ *
+ * - `div` - Include a wrapping div?  Defaults to true. Accepts sub options similar to
+ *   FormHelper::input().
+ * - Other attributes will be assigned to the input element.
+ *
+ * @param string $caption The label appearing on the button OR if string contains :// or the
+ *  extension .jpg, .jpe, .jpeg, .gif, .png use an image if the extension
+ *  exists, AND the first character is /, image is relative to webroot,
+ *  OR if the first character is not /, image is relative to webroot/img.
+ * @param array $options Array of options. See above.
+ * @return string A HTML submit button
+ * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/form.html#FormHelper::submit
+ */
+	public function submit($caption = null, $options = array()) {
+		if (!is_string($caption) && empty($caption)) {
+			$caption = __d('cake', 'Submit');
+		}
+		$out = null;
+		$div = true;
 
+		if (isset($options['div'])) {
+			$div = $options['div'];
+			unset($options['div']);
+		}
+		$options += array('class' => 'btn btn-primary', 'type' => 'submit', 'before' => null, 'after' => null, 'secure' => false);
+		$divOptions = array('tag' => 'div');
+
+		if ($div === true) {
+			$divOptions['class'] = 'submit';
+		} elseif ($div === false) {
+			unset($divOptions);
+		} elseif (is_string($div)) {
+			$divOptions['class'] = $div;
+		} elseif (is_array($div)) {
+			$divOptions = array_merge(array('class' => 'submit', 'tag' => 'div'), $div);
+		}
+
+		if (isset($options['name'])) {
+			$name = str_replace(array('[', ']'), array('.', ''), $options['name']);
+			$this->_secure($options['secure'], $name);
+		}
+		unset($options['secure']);
+
+		$before = $options['before'];
+		$after = $options['after'];
+		unset($options['before'], $options['after']);
+
+		$isUrl = strpos($caption, '://') !== false;
+		$isImage = preg_match('/\.(jpg|jpe|jpeg|gif|png|ico)$/', $caption);
+
+		if ($isUrl || $isImage) {
+			$unlockFields = array('x', 'y');
+			if (isset($options['name'])) {
+				$unlockFields = array(
+					$options['name'] . '_x', $options['name'] . '_y'
+				);
+			}
+			foreach ($unlockFields as $ignore) {
+				$this->unlockField($ignore);
+			}
+		}
+
+		if ($isUrl) {
+			unset($options['type']);
+			$tag = $this->Html->useTag('submitimage', $caption, $options);
+		} elseif ($isImage) {
+			unset($options['type']);
+			if ($caption{0} !== '/') {
+				$url = $this->webroot(Configure::read('App.imageBaseUrl') . $caption);
+			} else {
+				$url = $this->webroot(trim($caption, '/'));
+			}
+			$url = $this->assetTimestamp($url);
+			$tag = $this->Html->useTag('submitimage', $url, $options);
+		} else {
+			$options['value'] = $caption;
+			$tag = $this->Html->useTag('submit', $options);
+		}
+		$out = $before . $tag . $after;
+
+		if (isset($divOptions)) {
+			$tag = $divOptions['tag'];
+			unset($divOptions['tag']);
+			$out = $this->Html->tag($tag, $out, $divOptions);
+		}
+		return $out;
+	}
 /**
  * Creates an HTML link, but access the url using the method you specify (defaults to POST).
  * Requires javascript to be enabled in browser.
