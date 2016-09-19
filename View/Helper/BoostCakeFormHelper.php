@@ -81,9 +81,9 @@ class BoostCakeFormHelper extends FormHelper {
 		$inputDefaultSetting = array(
 			'div' => 'form-group row',
 			'label' => array(
-				'class' => 'col-md-3 form-control-label'
+				'class' => 'col-xs-12 col-md-3 form-control-label'
 			),
-			'wrapInput' => 'col-md-9',
+			'wrapInput' => 'col-xs-12 col-md-9',
 			'class' => 'form-control form-control-static'
 		);
 
