@@ -225,12 +225,11 @@ class BoostCakeFormHelper extends FormHelper {
 					$dateFormatted = $value;
 				}
 
+				$attributes['date-locale'] = Configure::read('Site.language');
+				$attributes['value'] = $dateFormatted;
+
 				// Generate output fot the textfield
-				$output .= $this->text($fieldName, array(
-					'value' => $dateFormatted,
-					'class' => $attributes['class'],
-					'data-locale' => Configure::read('Site.language')
-				));
+				$output .= $this->text($fieldName, $attributes);
 			}
 
 		}
