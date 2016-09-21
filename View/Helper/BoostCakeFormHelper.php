@@ -72,7 +72,7 @@ class BoostCakeFormHelper extends FormHelper {
 			'wrapInput' => array(
 				'tag' => 'div'
 			),
-			'checkboxDiv' => 'checkbox',
+			'checkboxDiv' => 'form-check',
 			'beforeInput' => '',
 			'afterInput' => '',
 			'errorClass' => 'has-error error'
@@ -128,8 +128,10 @@ class BoostCakeFormHelper extends FormHelper {
 		$html = parent::input($fieldName, $options);
 
 		if ($this->_inputType === 'checkbox') {
-			$labelClass = 'c-input c-checkbox';
+			$labelClass = 'form-check-label';
 			$html = str_replace($options['label']['class'], $labelClass, $html);
+			$inputClass = 'form-check-input';
+			$html = str_replace($options['class'], $inputClass, $html);
 			if (isset($options['before'])) {
 				$html = str_replace($options['before'], '%before%', $html);
 			}
@@ -139,7 +141,7 @@ class BoostCakeFormHelper extends FormHelper {
 				$html = preg_replace($regex, '', $html);
 				$html = preg_replace(
 					'/(<input type="checkbox".*?>)/',
-					$label[1] . '$1 ' . '<span class="c-indicator"></span>' . $label[2],
+					$label[1] . '$1' . $label[2],
 					$html
 				);
 			}
