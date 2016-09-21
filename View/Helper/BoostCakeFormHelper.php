@@ -148,8 +148,8 @@ class BoostCakeFormHelper extends FormHelper {
 			}
 		}
 
-		if ($this->_inputType === 'datetime') {
-			$class = $inputDefaults['class'] . ' js-date-time-picker';
+		if ($this->_inputType === 'datetime' || $this->_inputType === 'date' || $this->_inputType === 'time') {
+			$class = $inputDefaults['class'] . ' js-date-time-picker ' . $this->_inputType;
 			$html = str_replace($options['class'], $class, $html);
 		}
 
@@ -210,24 +210,13 @@ class BoostCakeFormHelper extends FormHelper {
 
 		if ($dateFormat !== null) {
 
-			// Always make sure date matches locale
-			$dateFormat = Configure::read('Site.localeDateTimeFormats.' . Configure::read('Site.language') . '.dateTimeFormat');
-
 			if ($value === null) {
 				$output .= $this->text($fieldName, array(
 					'value' => '',
 					'class' => $attributes['class']
 				));
 			} else {
-				if (strtotime($value) !== false) {
-					$dateFormatted = date($dateFormat, strtotime($value));
-				} else {
-					$dateFormatted = $value;
-				}
-
-				$attributes['data-locale'] = Configure::read('Site.language');
-				$attributes['value'] = $dateFormatted;
-
+				$attributes['value'] = $value;
 				// Generate output fot the textfield
 				$output .= $this->text($fieldName, $attributes);
 			}
