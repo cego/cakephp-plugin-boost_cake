@@ -141,7 +141,7 @@ class BoostCakeFormHelper extends FormHelper {
 				$html = preg_replace($regex, '', $html);
 				$html = preg_replace(
 					'/(<input type="checkbox".*?>)/',
-					$label[1] . '$1' . $label[2],
+					$label[1] . '$1 ' . $label[2],
 					$html
 				);
 			}
