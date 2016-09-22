@@ -98,6 +98,8 @@ class BoostCakeFormHelper extends FormHelper {
 		if (isset($options['label']) && !is_array($options['label']) && $options['label'] !== false) {
 			$labelText = $options['label'];
 			$options['label'] = array('text' => $labelText);
+		} else {
+			$options['label'] = false;
 		}
 
 		$options = Hash::merge(
@@ -157,6 +159,11 @@ class BoostCakeFormHelper extends FormHelper {
 
 		if ($this->_inputType === 'select') {
 			$class = $inputDefaults['class'] . ' c-select';
+			$html = str_replace($options['class'], $class, $html);
+		}
+
+		if ($this->_inputType === 'submit') {
+			$class = 'btn btn-primary';
 			$html = str_replace($options['class'], $class, $html);
 		}
 
