@@ -217,7 +217,7 @@ class BoostCakeFormHelper extends FormHelper {
 		unset($attributes['value']);
 		unset($attributes['empty']);
 
-		if ($dateFormat !== null) {
+		if ($dateFormat !== null || $timeFormat !== null) {
 
 			if ($value === null) {
 				$output .= $this->text($fieldName, array(
