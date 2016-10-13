@@ -152,7 +152,7 @@ class BoostCakeFormHelper extends FormHelper {
 			}
 		}
 
-		if ($this->_inputType === 'datetime' || $this->_inputType === 'date' || $this->_inputType === 'time') {
+		if ($this->_inputType === 'datetime' || $this->_inputType === 'date' || $this->_inputType === 'time' || $this->_inputType === 'datetimeshort') {
 			$class = $inputDefaults['class'] . ' js-date-time-picker ' . $this->_inputType;
 			$html = str_replace($options['class'], $class, $html);
 		}
