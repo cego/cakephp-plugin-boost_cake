@@ -307,7 +307,7 @@ class BoostCakeFormHelper extends FormHelper {
 				$actionName = __d('cake', 'Edit %s');
 			}
 			$modelName = Inflector::humanize(Inflector::underscore($model));
-			$legend = sprintf($actionName, __($modelName));
+			$legend = sprintf($actionName, $modelName);
 		}
 
 		$out = null;
